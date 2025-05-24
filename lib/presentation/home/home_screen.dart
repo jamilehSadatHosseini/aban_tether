@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import '../router/routes.dart';
+import '../widgets/coin_tile.dart';
 import 'home_bloc.dart';
 import 'home_event.dart';
 import 'home_state.dart';
@@ -16,7 +20,8 @@ class HomeScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.person),
             onPressed: () {
-              Navigator.pushNamed(context, '/profile');
+              Get.toNamed(Routes.profile);
+              ;
             },
           )
         ],
@@ -30,29 +35,16 @@ class HomeScreen extends StatelessWidget {
               itemCount: state.coins.length,
               itemBuilder: (context, index) {
                 final coin = state.coins[index];
-                final isFavorite = state.favorites.contains(coin.id);
+                final isFavorite = coin.isFavorite;
 
-                return ListTile(
-                  leading: Image.network(coin.iconUrl, width: 30),
-                  title: Text(coin.name),
-                  subtitle: Text(coin.symbol),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text('\$${coin.price.toStringAsFixed(2)}'),
-                      IconButton(
-                        icon: Icon(
-                          isFavorite ? Icons.star : Icons.star_border,
-                          color: isFavorite ? Colors.amber : null,
-                        ),
-                        onPressed: () {
-                          context.read<HomeBloc>().add(
-                            ToggleFavorite(coin.id),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
+                return CoinTile(
+                  coin: coin,
+                  initialFavorite: isFavorite,
+                  onToggle: (isFav) {
+                    context.read<HomeBloc>().add(
+                      ToggleFavorite(coin.id),
+                    );
+                  },
                 );
               },
             );

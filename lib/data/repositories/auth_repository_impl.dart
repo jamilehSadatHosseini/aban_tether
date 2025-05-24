@@ -38,8 +38,19 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<Either<Failure, String?>> getToken() async {
+    try {
+      final token = await tokenLocalDataSource.getToken();
+      return Right(token);
+    } on CacheException catch (e) {
+      return Left(CacheFailure(message: e.message));
+    } catch (e) {
+      return const Left(ExceptionFailure());
+    }
+  }
+  @override
   Future<Either<Failure, User>> getUserProfile() async {
-    if (!await networkInfo.isConnected) {
+    if (!kIsWeb && !await networkInfo.isConnected) {
       return const Left(NetworkFailure());
     }
     try {
@@ -52,13 +63,18 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
+
+
   @override
-  Future<Either<Failure, String?>> getToken() async {
+  Future<Either<Failure, User>> updatePhoneNumber(int userId,String phoneNumber) async {
+    if (!kIsWeb && !await networkInfo.isConnected) {
+      return const Left(NetworkFailure());
+    }
     try {
-      final token = await tokenLocalDataSource.getToken();
-      return Right(token);
-    } on CacheException catch (e) {
-      return Left(CacheFailure(message: e.message));
+      final response = await remoteDataSource.updatePhoneNumber( userId, phoneNumber);
+      return Right(response);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(message: e.message));
     } catch (e) {
       return const Left(ExceptionFailure());
     }

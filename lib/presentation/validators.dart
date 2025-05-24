@@ -16,5 +16,14 @@ class Validators {
     }
     return null;
   }
-
+  static String? validatePhoneNumber(String? value) {
+    if (value == null || value.isEmpty) {
+      return "Phone number can't be empty";
+    }
+    final phoneRegex = RegExp(r'^\+?[0-9]{10,15}$');
+    if (!phoneRegex.hasMatch(value)) {
+      return "Enter a valid phone number";
+    }
+    return null;
+  }
 }

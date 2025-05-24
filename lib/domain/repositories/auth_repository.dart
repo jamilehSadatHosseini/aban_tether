@@ -4,9 +4,15 @@ import 'package:dartz/dartz.dart';
 
 import '../entities/user.dart';
 
-abstract class AuthRepository{
-  Future<Either<Failure,String>> login(LoginInfo loginInfo);
-  Future<Either<Failure,User>> getUserProfile();
+abstract class AuthRepository {
+  Future<Either<Failure, String>> login(LoginInfo loginInfo);
+
   Future<Either<Failure, String?>> getToken();
 
+  Future<Either<Failure, User>> getUserProfile();
+
+  Future<Either<Failure, User>> updatePhoneNumber(
+    int userId,
+    String phoneNumber,
+  );
 }

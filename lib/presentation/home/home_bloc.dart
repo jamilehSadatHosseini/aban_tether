@@ -20,7 +20,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
     result.fold(
           (failure) => emit(HomeError(failure: failure)),
-          (coins) => emit(HomeLoaded(coins: coins, favorites: [])),
+          (coins) => emit(HomeLoaded(coins: coins)),
     );
   }
 

@@ -8,13 +8,9 @@ import '../network/auth_header_interceptor.dart';
 abstract class DioModule {
   @LazySingleton()
   @Named("authHttpClient")
-  Dio createAuthSecureClient() {
-    final dio = Dio(BaseOptions(baseUrl:baseUrlAuthentication))
-    ..interceptors.add(InterceptorsWrapper(onRequest: (options, handler) {
-    handler.next(options);
-    }
-    ));
-    //dio.interceptors.add(interceptor);
+  Dio createAuthSecureClient(AuthHeaderInterceptor interceptor) {
+    final dio = Dio(BaseOptions(baseUrl:baseUrlAuthentication));
+    dio.interceptors.add(interceptor);
     return dio;
   }
 

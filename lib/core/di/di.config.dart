@@ -20,28 +20,35 @@ import 'package:aban_tether_app/data/data_sources/local/token_local_data_source.
     as _i437;
 import 'package:aban_tether_app/data/data_sources/remote/auth_remote_data_source.dart'
     as _i1041;
+import 'package:aban_tether_app/data/data_sources/remote/coin_remote_data_source.dart'
+    as _i636;
 import 'package:aban_tether_app/data/repositories/auth_repository_impl.dart'
     as _i362;
+import 'package:aban_tether_app/data/repositories/coin_repository_impl.dart'
+    as _i693;
 import 'package:aban_tether_app/domain/repositories/auth_repository.dart'
-    as _i864;
+    as _i853;
+import 'package:aban_tether_app/domain/repositories/coin_repository.dart'
+    as _i756;
+import 'package:aban_tether_app/domain/usecases/get_coins_usecase.dart'
+    as _i501;
 import 'package:aban_tether_app/domain/usecases/get_token_use_case.dart'
     as _i543;
 import 'package:aban_tether_app/domain/usecases/get_user_profile_usecase.dart'
     as _i168;
 import 'package:aban_tether_app/domain/usecases/login_usecase.dart' as _i86;
+import 'package:aban_tether_app/domain/usecases/update_phone_number_use_case.dart'
+    as _i287;
+import 'package:aban_tether_app/presentation/home/home_bloc.dart' as _i887;
 import 'package:aban_tether_app/presentation/login/login_cubit.dart' as _i263;
+import 'package:aban_tether_app/presentation/profile/profile_bloc.dart'
+    as _i207;
 import 'package:dio/dio.dart' as _i361;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart' as _i558;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:internet_connection_checker/internet_connection_checker.dart'
     as _i973;
-
-import '../../data/data_sources/remote/coin_remote_data_source.dart';
-import '../../data/repositories/coin_repository_impl.dart';
-import '../../domain/repositories/coin_repository.dart' as _i864;
-import '../../domain/usecases/get_coins_usecase.dart' as _i86;
-import '../../presentation/home/home_bloc.dart' as _i263;
 
 extension GetItInjectableX on _i174.GetIt {
   // initializes the registration of main-scope dependencies inside of GetIt
@@ -66,54 +73,63 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i485.AuthHeaderInterceptor>(
       () => _i485.AuthHeaderInterceptor(gh<_i437.TokenLocalDataSource>()),
     );
-    gh.factory<_i361.Dio>(
-      () => dioModule.createAuthSecureClient(),
+    gh.lazySingleton<_i361.Dio>(
+      () => dioModule.createAuthSecureClient(gh<_i485.AuthHeaderInterceptor>()),
       instanceName: 'authHttpClient',
     );
-    gh.factory<_i361.Dio>(
+    gh.lazySingleton<_i361.Dio>(
       () => dioModule.createCoinClient(gh<_i485.AuthHeaderInterceptor>()),
       instanceName: 'HttpClient',
+    );
+    gh.lazySingleton<_i636.CoinRemoteDataSource>(
+      () => _i636.CoinRemoteDataSourceImp(
+        gh<_i361.Dio>(instanceName: 'HttpClient'),
+      ),
     );
     gh.lazySingleton<_i1041.AuthRemoteDataSource>(
       () => _i1041.AuthRemoteDataSourceImp(
         gh<_i361.Dio>(instanceName: 'authHttpClient'),
       ),
     );
-    gh.lazySingleton<_i864.AuthRepository>(
+    gh.lazySingleton<_i853.AuthRepository>(
       () => _i362.AuthRepositoryImpl(
         gh<_i1041.AuthRemoteDataSource>(),
         gh<_i437.TokenLocalDataSource>(),
         gh<_i328.NetworkInfo>(),
       ),
     );
-
+    gh.lazySingleton<_i756.CoinRepository>(
+      () => _i693.CoinRepositoryImpl(
+        gh<_i636.CoinRemoteDataSource>(),
+        gh<_i328.NetworkInfo>(),
+      ),
+    );
     gh.lazySingleton<_i543.GetTokenUseCase>(
-      () => _i543.GetTokenUseCase(gh<_i864.AuthRepository>()),
+      () => _i543.GetTokenUseCase(gh<_i853.AuthRepository>()),
     );
     gh.lazySingleton<_i168.GetUserProfileUseCase>(
-      () => _i168.GetUserProfileUseCase(gh<_i864.AuthRepository>()),
+      () => _i168.GetUserProfileUseCase(gh<_i853.AuthRepository>()),
     );
     gh.lazySingleton<_i86.LoginUseCase>(
-      () => _i86.LoginUseCase(gh<_i864.AuthRepository>()),
+      () => _i86.LoginUseCase(gh<_i853.AuthRepository>()),
+    );
+    gh.lazySingleton<_i287.UpdatePhoneNumberUseCase>(
+      () => _i287.UpdatePhoneNumberUseCase(gh<_i853.AuthRepository>()),
     );
     gh.factory<_i263.LoginCubit>(
       () => _i263.LoginCubit(gh<_i86.LoginUseCase>()),
     );
-    gh.lazySingleton<CoinRemoteDataSource>(
-          () => CoinRemoteDataSourceImp(gh<_i361.Dio>(instanceName: 'HttpClient')),
+    gh.lazySingleton<_i501.GetCoinsUseCase>(
+      () => _i501.GetCoinsUseCase(gh<_i756.CoinRepository>()),
     );
-
-    gh.lazySingleton<_i864.CoinRepository>(
-          () => CoinRepositoryImpl(
-        gh<CoinRemoteDataSource>(),
-        gh<_i328.NetworkInfo>(),
+    gh.factory<_i207.ProfileBloc>(
+      () => _i207.ProfileBloc(
+        getProfileUseCase: gh<_i168.GetUserProfileUseCase>(),
+        updatePhoneUseCase: gh<_i287.UpdatePhoneNumberUseCase>(),
       ),
     );
-    gh.lazySingleton<_i86.GetCoinsUseCase>(
-          () => _i86.GetCoinsUseCase(gh<_i864.CoinRepository>()),
-    );
-    gh.factory<_i263.HomeBloc>(
-          () => _i263.HomeBloc(gh<_i86.GetCoinsUseCase>()),
+    gh.factory<_i887.HomeBloc>(
+      () => _i887.HomeBloc(gh<_i501.GetCoinsUseCase>()),
     );
     return this;
   }

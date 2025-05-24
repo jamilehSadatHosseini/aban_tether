@@ -1,5 +1,4 @@
 import 'package:aban_tether_app/data/data_sources/remote/coin_remote_data_source.dart';
-import 'package:aban_tether_app/data/models/coin_model.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
@@ -19,7 +18,7 @@ class CoinRepositoryImpl implements CoinRepository {
 
   @override
   Future<Either<Failure, List<Coin>>> getCoins() async {
-    if (!kIsWeb &&!await networkInfo.isConnected) {
+    if (!kIsWeb && !await networkInfo.isConnected) {
       return const Left(NetworkFailure());
     }
     try {
