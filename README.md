@@ -46,7 +46,7 @@ Helper utilities, constants, and error handling are located under the `core/` di
 
 1. **Clone the repository:**
 ```bash
-git clone https://github.com/your-username/aban_tether_app.git
+git clone https://github.com/jamilehSadatHosseini/aban_tether
 cd aban_tether_app
 ```
 
