@@ -14,6 +14,6 @@ class UpdatePhoneNumberUseCase implements UseCase< User, User> {
 
   @override
   Future<Either<Failure, User>> call(User user) {
-    return repository.updatePhoneNumber(user.id,user.phoneNumber);
+    return repository.updatePhoneNumber(user.id,user.phoneNumber!);
   }
 }

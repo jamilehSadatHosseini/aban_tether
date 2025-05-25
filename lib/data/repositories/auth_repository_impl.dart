@@ -55,7 +55,7 @@ class AuthRepositoryImpl implements AuthRepository {
     }
     try {
       final user = await remoteDataSource.getUserProfile();
-      return Right(user);
+      return Right(user.user);
     } on ServerException catch (e) {
       return Left(ServerFailure(message: e.message));
     } catch (e) {
@@ -72,7 +72,7 @@ class AuthRepositoryImpl implements AuthRepository {
     }
     try {
       final response = await remoteDataSource.updatePhoneNumber( userId, phoneNumber);
-      return Right(response);
+      return Right(response.user);
     } on ServerException catch (e) {
       return Left(ServerFailure(message: e.message));
     } catch (e) {

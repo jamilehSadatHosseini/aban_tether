@@ -29,6 +29,7 @@ class CoinRepositoryImpl implements CoinRepository {
     } on CacheException catch (e) {
       return Left(CacheFailure(message: e.message));
     } catch (e) {
+      print(e.toString());
       return const Left(ExceptionFailure());
     }
   }

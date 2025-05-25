@@ -19,7 +19,24 @@ class CoinTile extends StatelessWidget {
     final favNotifier = ValueNotifier<bool>(initialFavorite);
 
     return ListTile(
-      leading: Image.network(coin.iconUrl, width: 30),
+      leading: Image.network(
+      coin.iconUrl,
+      width: 30,
+      height: 30,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) {
+        return const Icon(Icons.broken_image, size: 30, color: Colors.grey);
+      },
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return const SizedBox(
+          width: 30,
+          height: 30,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        );
+      },
+    ),
+
       title: Text(coin.name),
       subtitle: Text(coin.symbol),
       trailing: Row(

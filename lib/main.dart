@@ -6,6 +6,7 @@ import 'package:aban_tether_app/presentation/profile/profile_bloc.dart';
 import 'package:aban_tether_app/presentation/home/home_screen.dart';
 import 'package:aban_tether_app/presentation/login/login_screen.dart';
 import 'package:aban_tether_app/presentation/profile/profile_screen.dart';
+import 'package:aban_tether_app/presentation/router/AuthGuard.dart';
 import 'package:aban_tether_app/presentation/router/routes.dart';
 import 'package:aban_tether_app/presentation/theme.dart';
 import 'package:flutter/material.dart';
@@ -20,14 +21,13 @@ import 'domain/usecases/get_token_use_case.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await configureDependencies();
+  configureDependencies();
   final getTokenUseCase = getIt<GetTokenUseCase>();
   final result = await getTokenUseCase(NoParams());
   result.fold(
     (failure) => TokenMemory.set(null),
     (token) => TokenMemory.set(token),
   );
-
   runApp(const MyApp());
 }
 
@@ -47,7 +47,7 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeDataConfig.light().getThemeData(),
       darkTheme: ThemeDataConfig.dark().getThemeData(),
       themeMode: ThemeMode.system,
-      initialRoute: Routes.home,
+      initialRoute: Routes.login,
       getPages: [
         GetPage(
           name: Routes.login,
@@ -62,15 +62,16 @@ class _MyAppState extends State<MyApp> {
             create: (_) => getIt<HomeBloc>()..add(LoadCoins()),
             child: HomeScreen(),
           ),
-          //middlewares: [AuthGuard(getIt<GetTokenUseCase>())],
+          middlewares: [AuthGuard(getIt<GetTokenUseCase>())],
         ),
         GetPage(
           name: Routes.profile,
           page: () => BlocProvider(
             create: (_) => getIt<ProfileBloc>()..add(LoadProfileEvent()),
 
-          child: ProfileScreen()),
-         // middlewares: [AuthGuard(getIt<GetTokenUseCase>())],
+            child: ProfileScreen(),
+          ),
+          middlewares: [AuthGuard(getIt<GetTokenUseCase>())],
         ),
       ],
     );

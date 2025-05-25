@@ -9,40 +9,6 @@
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:aban_tether_app/core/di/dio_module.dart' as _i463;
-import 'package:aban_tether_app/core/di/internet_connection_module.dart'
-    as _i317;
-import 'package:aban_tether_app/core/di/storage_module.dart' as _i188;
-import 'package:aban_tether_app/core/network/auth_header_interceptor.dart'
-    as _i485;
-import 'package:aban_tether_app/core/network/network_info.dart' as _i328;
-import 'package:aban_tether_app/data/data_sources/local/token_local_data_source.dart'
-    as _i437;
-import 'package:aban_tether_app/data/data_sources/remote/auth_remote_data_source.dart'
-    as _i1041;
-import 'package:aban_tether_app/data/data_sources/remote/coin_remote_data_source.dart'
-    as _i636;
-import 'package:aban_tether_app/data/repositories/auth_repository_impl.dart'
-    as _i362;
-import 'package:aban_tether_app/data/repositories/coin_repository_impl.dart'
-    as _i693;
-import 'package:aban_tether_app/domain/repositories/auth_repository.dart'
-    as _i853;
-import 'package:aban_tether_app/domain/repositories/coin_repository.dart'
-    as _i756;
-import 'package:aban_tether_app/domain/usecases/get_coins_usecase.dart'
-    as _i501;
-import 'package:aban_tether_app/domain/usecases/get_token_use_case.dart'
-    as _i543;
-import 'package:aban_tether_app/domain/usecases/get_user_profile_usecase.dart'
-    as _i168;
-import 'package:aban_tether_app/domain/usecases/login_usecase.dart' as _i86;
-import 'package:aban_tether_app/domain/usecases/update_phone_number_use_case.dart'
-    as _i287;
-import 'package:aban_tether_app/presentation/home/home_bloc.dart' as _i887;
-import 'package:aban_tether_app/presentation/login/login_cubit.dart' as _i263;
-import 'package:aban_tether_app/presentation/profile/profile_bloc.dart'
-    as _i207;
 import 'package:dio/dio.dart' as _i361;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart' as _i558;
 import 'package:get_it/get_it.dart' as _i174;
@@ -50,93 +16,110 @@ import 'package:injectable/injectable.dart' as _i526;
 import 'package:internet_connection_checker/internet_connection_checker.dart'
     as _i973;
 
-extension GetItInjectableX on _i174.GetIt {
-  // initializes the registration of main-scope dependencies inside of GetIt
-  _i174.GetIt init({
-    String? environment,
-    _i526.EnvironmentFilter? environmentFilter,
-  }) {
-    final gh = _i526.GetItHelper(this, environment, environmentFilter);
-    final internetConnectionModule = _$InternetConnectionModule();
-    final storageModule = _$StorageModule();
-    final dioModule = _$DioModule();
-    gh.lazySingleton<_i973.InternetConnectionChecker>(
-      () => internetConnectionModule.connectionChecker,
-    );
-    gh.lazySingleton<_i558.FlutterSecureStorage>(() => storageModule.storage);
-    gh.lazySingleton<_i328.NetworkInfo>(
-      () => _i328.NetworkInfoImpl(gh<_i973.InternetConnectionChecker>()),
-    );
-    gh.lazySingleton<_i437.TokenLocalDataSource>(
-      () => _i437.TokenLocalDataSourceImpl(gh<_i558.FlutterSecureStorage>()),
-    );
-    gh.factory<_i485.AuthHeaderInterceptor>(
-      () => _i485.AuthHeaderInterceptor(gh<_i437.TokenLocalDataSource>()),
-    );
-    gh.lazySingleton<_i361.Dio>(
-      () => dioModule.createAuthSecureClient(gh<_i485.AuthHeaderInterceptor>()),
-      instanceName: 'authHttpClient',
-    );
-    gh.lazySingleton<_i361.Dio>(
-      () => dioModule.createCoinClient(gh<_i485.AuthHeaderInterceptor>()),
-      instanceName: 'HttpClient',
-    );
-    gh.lazySingleton<_i636.CoinRemoteDataSource>(
-      () => _i636.CoinRemoteDataSourceImp(
-        gh<_i361.Dio>(instanceName: 'HttpClient'),
-      ),
-    );
-    gh.lazySingleton<_i1041.AuthRemoteDataSource>(
-      () => _i1041.AuthRemoteDataSourceImp(
-        gh<_i361.Dio>(instanceName: 'authHttpClient'),
-      ),
-    );
-    gh.lazySingleton<_i853.AuthRepository>(
-      () => _i362.AuthRepositoryImpl(
-        gh<_i1041.AuthRemoteDataSource>(),
-        gh<_i437.TokenLocalDataSource>(),
-        gh<_i328.NetworkInfo>(),
-      ),
-    );
-    gh.lazySingleton<_i756.CoinRepository>(
-      () => _i693.CoinRepositoryImpl(
-        gh<_i636.CoinRemoteDataSource>(),
-        gh<_i328.NetworkInfo>(),
-      ),
-    );
-    gh.lazySingleton<_i543.GetTokenUseCase>(
-      () => _i543.GetTokenUseCase(gh<_i853.AuthRepository>()),
-    );
-    gh.lazySingleton<_i168.GetUserProfileUseCase>(
-      () => _i168.GetUserProfileUseCase(gh<_i853.AuthRepository>()),
-    );
-    gh.lazySingleton<_i86.LoginUseCase>(
-      () => _i86.LoginUseCase(gh<_i853.AuthRepository>()),
-    );
-    gh.lazySingleton<_i287.UpdatePhoneNumberUseCase>(
-      () => _i287.UpdatePhoneNumberUseCase(gh<_i853.AuthRepository>()),
-    );
-    gh.factory<_i263.LoginCubit>(
-      () => _i263.LoginCubit(gh<_i86.LoginUseCase>()),
-    );
-    gh.lazySingleton<_i501.GetCoinsUseCase>(
-      () => _i501.GetCoinsUseCase(gh<_i756.CoinRepository>()),
-    );
-    gh.factory<_i207.ProfileBloc>(
-      () => _i207.ProfileBloc(
-        getProfileUseCase: gh<_i168.GetUserProfileUseCase>(),
-        updatePhoneUseCase: gh<_i287.UpdatePhoneNumberUseCase>(),
-      ),
-    );
-    gh.factory<_i887.HomeBloc>(
-      () => _i887.HomeBloc(gh<_i501.GetCoinsUseCase>()),
-    );
-    return this;
-  }
+import '../../data/data_sources/local/token_local_data_source.dart' as _i864;
+import '../../data/data_sources/remote/auth_remote_data_source.dart' as _i865;
+import '../../data/data_sources/remote/coin_remote_data_source.dart' as _i240;
+import '../../data/data_sources/remote/http_client/auth_header_interceptor.dart'
+    as _i722;
+import '../../data/repositories/auth_repository_impl.dart' as _i895;
+import '../../data/repositories/coin_repository_impl.dart' as _i743;
+import '../../domain/repositories/auth_repository.dart' as _i1073;
+import '../../domain/repositories/coin_repository.dart' as _i167;
+import '../../domain/usecases/get_coins_usecase.dart' as _i249;
+import '../../domain/usecases/get_token_use_case.dart' as _i3;
+import '../../domain/usecases/get_user_profile_usecase.dart' as _i629;
+import '../../domain/usecases/login_usecase.dart' as _i253;
+import '../../domain/usecases/update_phone_number_use_case.dart' as _i658;
+import '../../presentation/home/home_bloc.dart' as _i632;
+import '../../presentation/login/login_cubit.dart' as _i65;
+import '../../presentation/profile/profile_bloc.dart' as _i797;
+import '../network/network_info.dart' as _i932;
+import 'di_module.dart' as _i211;
+import 'internet_connection_module.dart' as _i272;
+import 'storage_module.dart' as _i371;
+
+// initializes the registration of main-scope dependencies inside of GetIt
+_i174.GetIt init(
+  _i174.GetIt getIt, {
+  String? environment,
+  _i526.EnvironmentFilter? environmentFilter,
+}) {
+  final gh = _i526.GetItHelper(getIt, environment, environmentFilter);
+  final internetConnectionModule = _$InternetConnectionModule();
+  final storageModule = _$StorageModule();
+  final dioModule = _$DioModule();
+  gh.lazySingleton<_i973.InternetConnectionChecker>(
+    () => internetConnectionModule.connectionChecker,
+  );
+  gh.lazySingleton<_i558.FlutterSecureStorage>(() => storageModule.storage);
+  gh.lazySingleton<_i932.NetworkInfo>(
+    () => _i932.NetworkInfoImpl(gh<_i973.InternetConnectionChecker>()),
+  );
+  gh.lazySingleton<_i864.TokenLocalDataSource>(
+    () => _i864.TokenLocalDataSourceImpl(gh<_i558.FlutterSecureStorage>()),
+  );
+  gh.factory<_i722.AuthHeaderInterceptor>(
+    () => _i722.AuthHeaderInterceptor(gh<_i864.TokenLocalDataSource>()),
+  );
+  gh.lazySingleton<_i361.Dio>(
+    () => dioModule.createAuthSecureClient(gh<_i722.AuthHeaderInterceptor>()),
+    instanceName: 'authHttpClient',
+  );
+  gh.lazySingleton<_i865.AuthRemoteDataSource>(
+    () => _i865.AuthRemoteDataSourceImp(
+      gh<_i361.Dio>(instanceName: 'authHttpClient'),
+    ),
+  );
+  gh.lazySingleton<_i1073.AuthRepository>(
+    () => _i895.AuthRepositoryImpl(
+      gh<_i865.AuthRemoteDataSource>(),
+      gh<_i864.TokenLocalDataSource>(),
+      gh<_i932.NetworkInfo>(),
+    ),
+  );
+  gh.lazySingleton<_i361.Dio>(
+    () => dioModule.createCoinClient(gh<_i722.AuthHeaderInterceptor>()),
+    instanceName: 'httpClient',
+  );
+  gh.lazySingleton<_i3.GetTokenUseCase>(
+    () => _i3.GetTokenUseCase(gh<_i1073.AuthRepository>()),
+  );
+  gh.lazySingleton<_i629.GetUserProfileUseCase>(
+    () => _i629.GetUserProfileUseCase(gh<_i1073.AuthRepository>()),
+  );
+  gh.lazySingleton<_i253.LoginUseCase>(
+    () => _i253.LoginUseCase(gh<_i1073.AuthRepository>()),
+  );
+  gh.lazySingleton<_i658.UpdatePhoneNumberUseCase>(
+    () => _i658.UpdatePhoneNumberUseCase(gh<_i1073.AuthRepository>()),
+  );
+  gh.factory<_i65.LoginCubit>(() => _i65.LoginCubit(gh<_i253.LoginUseCase>()));
+  gh.factory<_i797.ProfileBloc>(
+    () => _i797.ProfileBloc(
+      getProfileUseCase: gh<_i629.GetUserProfileUseCase>(),
+      updatePhoneUseCase: gh<_i658.UpdatePhoneNumberUseCase>(),
+    ),
+  );
+  gh.lazySingleton<_i240.CoinRemoteDataSource>(
+    () => _i240.CoinRemoteDataSourceImp(
+      gh<_i361.Dio>(instanceName: 'httpClient'),
+    ),
+  );
+  gh.lazySingleton<_i167.CoinRepository>(
+    () => _i743.CoinRepositoryImpl(
+      gh<_i240.CoinRemoteDataSource>(),
+      gh<_i932.NetworkInfo>(),
+    ),
+  );
+  gh.lazySingleton<_i249.GetCoinsUseCase>(
+    () => _i249.GetCoinsUseCase(gh<_i167.CoinRepository>()),
+  );
+  gh.factory<_i632.HomeBloc>(() => _i632.HomeBloc(gh<_i249.GetCoinsUseCase>()));
+  return getIt;
 }
 
-class _$InternetConnectionModule extends _i317.InternetConnectionModule {}
+class _$InternetConnectionModule extends _i272.InternetConnectionModule {}
 
-class _$StorageModule extends _i188.StorageModule {}
+class _$StorageModule extends _i371.StorageModule {}
 
-class _$DioModule extends _i463.DioModule {}
+class _$DioModule extends _i211.DioModule {}

@@ -3,5 +3,5 @@ class LoginResponseModel {
 
   LoginResponseModel(this.authToken);
 
-  LoginResponseModel.fromJson(Map<String,dynamic> json) : authToken = json['auth_token'];
+  LoginResponseModel.fromJson(Map<String,dynamic> json) : authToken = json['authToken'];
 }

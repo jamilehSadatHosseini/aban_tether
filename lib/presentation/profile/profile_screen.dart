@@ -23,14 +23,14 @@ class _ProfileFormState extends State<ProfileScreen> {
         listener: (context, state) {
           if (state is PhoneUpdateSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Phone number updated successfully!'),
+               SnackBar(
+                content: Text('Phone number updated successfully!', style: TextStyle(color: Colors.white)),
               ),
             );
           } else if (state is PhoneUpdateError) {
             ScaffoldMessenger.of(
               context,
-            ).showSnackBar(SnackBar(content: Text(state.failure.message)));
+            ).showSnackBar(SnackBar(content: Text(state.failure.message, style: TextStyle(color: Colors.white))));
           }
         },
         builder: (context, state) {
@@ -40,7 +40,7 @@ class _ProfileFormState extends State<ProfileScreen> {
 
           if (state is GetUserProfileSuccess) {
             final user = state.user;
-            _phoneController.text = user.phoneNumber;
+            _phoneController.text = user.phoneNumber ?? '';
 
             return Padding(
               padding: const EdgeInsets.all(16),
